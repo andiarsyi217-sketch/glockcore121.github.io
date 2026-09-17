@@ -1,0 +1,1 @@
+GLOCKCORE 121 adalah coffee shop berbasis take away yang bertempat di Jln. Pongtiku Lrg 22 No. 7 dengan 7 menu varian coffee, 3 varian non coffee, dan 3 varian tea, dibuat langsung oleh barista yang terpercaya, dan diracik dengan racikan terbaik serta dijamin HALAL

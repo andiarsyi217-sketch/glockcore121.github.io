@@ -1,64 +1,91 @@
 /* =========================================================
-   GLOCKCORE 121 - JavaScript Interaction
+   GLOCKCORE 121 - JavaScript Interaction (jQuery)
    ========================================================= */
 
-document.addEventListener('DOMContentLoaded', () => {
+$(document).ready(function () {
   // 1. Mobile Menu Toggle
-  const mobileToggle = document.querySelector('.mobile-toggle');
-  const navLinks = document.querySelector('.nav-links');
+  const $mobileToggle = $('.mobile-toggle');
+  const $navLinks = $('.nav-links');
 
-  if (mobileToggle && navLinks) {
-    mobileToggle.addEventListener('click', () => {
-      navLinks.classList.toggle('open');
-      const isOpen = navLinks.classList.contains('open');
-      mobileToggle.innerHTML = isOpen ? '✕' : '☰';
-      mobileToggle.setAttribute('aria-expanded', isOpen);
+  if ($mobileToggle.length && $navLinks.length) {
+    $mobileToggle.on('click', function (e) {
+      e.stopPropagation();
+      $navLinks.toggleClass('open');
+      const isOpen = $navLinks.hasClass('open');
+      $mobileToggle.html(isOpen ? '✕' : '☰');
+      $mobileToggle.attr('aria-expanded', isOpen);
     });
 
     // Close menu when clicking outside
-    document.addEventListener('click', (e) => {
-      if (!mobileToggle.contains(e.target) && !navLinks.contains(e.target)) {
-        navLinks.classList.remove('open');
-        mobileToggle.innerHTML = '☰';
+    $(document).on('click', function (e) {
+      if (!$(e.target).closest('.mobile-toggle, .nav-links').length) {
+        $navLinks.removeClass('open');
+        $mobileToggle.html('☰');
+        $mobileToggle.attr('aria-expanded', 'false');
       }
+    });
+
+    // Close menu when a navigation link is clicked
+    $navLinks.find('a').on('click', function () {
+      $navLinks.removeClass('open');
+      $mobileToggle.html('☰');
+      $mobileToggle.attr('aria-expanded', 'false');
     });
   }
 
   // 2. Menu Filter Logic (for menu.html)
-  const filterBtns = document.querySelectorAll('.filter-btn');
-  const menuItems = document.querySelectorAll('.menu-frame');
+  const $filterBtns = $('.filter-btn');
+  const $menuItems = $('.menu-frame');
 
-  if (filterBtns.length > 0 && menuItems.length > 0) {
-    filterBtns.forEach((btn) => {
-      btn.addEventListener('click', () => {
-        // Active state
-        filterBtns.forEach((b) => b.classList.remove('active'));
-        btn.classList.add('active');
+  if ($filterBtns.length && $menuItems.length) {
+    $filterBtns.on('click', function () {
+      // Active state
+      $filterBtns.removeClass('active');
+      $(this).addClass('active');
 
-        const filterValue = btn.getAttribute('data-filter');
+      const filterValue = $(this).attr('data-filter');
 
-        menuItems.forEach((item) => {
-          const itemCategory = item.getAttribute('data-category');
-          if (filterValue === 'all' || itemCategory === filterValue) {
-            item.style.display = 'flex';
-            setTimeout(() => {
-              item.style.opacity = '1';
-              item.style.transform = 'translateY(0)';
-            }, 50);
-          } else {
-            item.style.opacity = '0';
-            item.style.transform = 'translateY(15px)';
-            setTimeout(() => {
-              item.style.display = 'none';
-            }, 250);
-          }
-        });
+      $menuItems.each(function () {
+        const $item = $(this);
+        const itemCategory = $item.attr('data-category');
+
+        if (filterValue === 'all' || itemCategory === filterValue) {
+          $item.stop(true, true).css('display', 'flex').animate(
+            { opacity: 1 },
+            200
+          );
+        } else {
+          $item.stop(true, true).animate(
+            { opacity: 0 },
+            200,
+            function () {
+              $(this).css('display', 'none');
+            }
+          );
+        }
       });
     });
   }
+
+  // 3. Smooth Scroll for Anchor Links
+  $('a[href^="#"]').on('click', function (e) {
+    const targetId = $(this).attr('href');
+    if (targetId && targetId !== '#') {
+      const $target = $(targetId);
+      if ($target.length) {
+        e.preventDefault();
+        $('html, body').stop().animate(
+          {
+            scrollTop: $target.offset().top - 70
+          },
+          400
+        );
+      }
+    }
+  });
 });
 
-// 3. Instagram Redirect Function
+// 4. Instagram Redirect Function
 function orderInstagram() {
   window.open('https://www.instagram.com/glockcore.121', '_blank');
 }
